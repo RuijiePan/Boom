@@ -34,7 +34,7 @@ public class AppProcessInfo implements Comparable<AppProcessInfo>{
 
     @Override
     public int compareTo(AppProcessInfo another) {
-        if (this.processName.compareTo(another.processName) == 0){
+        if (this.uid == another.uid){
             if (this.memory < another.memory){
                 return 1;
             }else if (this.memory == another.memory){
@@ -43,7 +43,7 @@ public class AppProcessInfo implements Comparable<AppProcessInfo>{
                 return -1;
             }
         }else {
-            return this.processName.compareTo(another.processName);
+            return this.uid - another.uid;
         }
     }
 
@@ -125,5 +125,21 @@ public class AppProcessInfo implements Comparable<AppProcessInfo>{
 
     public void setSystem(boolean system) {
         isSystem = system;
+    }
+
+    @Override
+    public String toString() {
+        return "AppProcessInfo{" +
+                "appName='" + appName + '\'' +
+                ", processName='" + processName + '\'' +
+                ", process='" + process + '\'' +
+                ", pid=" + pid +
+                ", uid=" + uid +
+                ", icon=" + icon +
+                ", memory=" + memory +
+                ", cpu='" + cpu + '\'' +
+                ", threadsCount='" + threadsCount + '\'' +
+                ", isSystem=" + isSystem +
+                '}';
     }
 }

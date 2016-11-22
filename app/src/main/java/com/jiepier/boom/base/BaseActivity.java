@@ -1,14 +1,18 @@
 package com.jiepier.boom.base;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.jiepier.boom.service.CleanService;
 import com.jiepier.boom.util.AppManager;
 import com.jiepier.boom.util.ResourceUtil;
 import com.jiepier.boom.util.StatusBarUtil;

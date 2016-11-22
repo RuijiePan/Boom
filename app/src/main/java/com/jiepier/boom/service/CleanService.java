@@ -11,12 +11,15 @@ import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.jiepier.boom.R;
 import com.jiepier.boom.bean.AppProcessInfo;
+import com.jiepier.boom.bean.ComparatorAppInfo;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import processes.ProcessManager;
@@ -87,7 +90,6 @@ public class CleanService extends Service {
             List<AndroidAppProcess> appProcessList = ProcessManager.getRunningAppProcesses();
             publishProgress(0,appProcessList.size());
 
-            String lastAppProcessName = "";
             for (AndroidAppProcess appProcessInfo : appProcessList){
                 publishProgress(++mAppCount, appProcessList.size());
                 abAppProcessInfo = new AppProcessInfo(
@@ -124,9 +126,26 @@ public class CleanService extends Service {
                 long memsize = activityManager.getProcessMemoryInfo(new int[]{appProcessInfo.pid})[0].getTotalPrivateDirty() * 1024;
                 abAppProcessInfo.setMemory(memsize);
 
-                list.add(abAppProcessInfo);
+                if (!abAppProcessInfo.isSystem())
+                    list.add(abAppProcessInfo);
             }
-            return list;
+
+            int lastUid = 0;
+            int index = -1;
+            List<AppProcessInfo> newList = new ArrayList<>();
+
+            for (AppProcessInfo info:list){
+                if (lastUid == info.getUid()){
+                    AppProcessInfo nowInfo = newList.get(index);
+                    newList.get(index).setMemory(nowInfo.getMemory()+info.getMemory());
+                }else {
+                    newList.add(info);
+                    lastUid = info.getUid();
+                    index++;
+                }
+            }
+
+            return newList;
         }
 
         @Override
@@ -240,6 +259,10 @@ public class CleanService extends Service {
 
     public boolean isCleaning() {
         return mIsCleaning;
+    }
+
+    public void setOnActionListener(OnPeocessActionListener listener) {
+        mOnActionListener = listener;
     }
 
     public static interface OnPeocessActionListener {
