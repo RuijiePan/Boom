@@ -1,7 +1,9 @@
 package com.jiepier.boom.icon;
 
 import android.graphics.drawable.Drawable;
+import android.graphics.pdf.PdfRenderer;
 
+import com.jiepier.boom.base.App;
 import com.jiepier.boom.bean.AppProcessInfo;
 
 /**
@@ -10,41 +12,38 @@ import com.jiepier.boom.bean.AppProcessInfo;
 
 public class AppIcon {
 
-    private float x;
-    private float y;
-    //振幅
-    private StartType type;
+    private int x;
+    private int y;
+
     private int rotateAngle;
     //旋转方向:顺时针为0，逆时针为1
     private int rotateDirection;
-    //logo移动方向：顺时针为0.逆时针为1
-    private int moveDirection;
     //起始时间
     private long startTime;
     private AppProcessInfo info;
+    private int degree;
+    private int speed;
+    private int width;
+    private int height;
 
     public float getX() {
         return x;
-    }
-
-    public void setX(float x) {
-        this.x = x;
     }
 
     public float getY() {
         return y;
     }
 
-    public void setY(float y) {
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
         this.y = y;
     }
 
-    public StartType getType() {
-        return type;
-    }
-
-    public void setType(StartType type) {
-        this.type = type;
+    public int getDegree() {
+        return degree;
     }
 
     public int getRotateAngle() {
@@ -79,11 +78,43 @@ public class AppIcon {
         this.info = info;
     }
 
-    public int getMoveDirection() {
-        return moveDirection;
+
+    public void setDegree(int degree) {
+        this.degree = degree;
     }
 
-    public void setMoveDirection(int moveDirection) {
-        this.moveDirection = moveDirection;
+    public int getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
+    }
+
+    public void changePoint(){
+        x += speed*Math.cos(degree);
+        y += speed*Math.sin(degree);
+
+        if (y >= App.sScreenHeight - height*2||y<= 0)
+            degree = -degree;
+
+        if (x >= App.sScreenWidth - width*1.5||x <= 0)
+            degree = (int) (Math.PI-degree);
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
     }
 }

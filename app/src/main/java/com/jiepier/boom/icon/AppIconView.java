@@ -25,7 +25,7 @@ import java.util.Random;
 
 public class AppIconView extends View {
 
-    public static final int APP_FLOAT_TIME = 3000;
+    public static final int APP_FLOAT_TIME = 5000;
     // 中等振幅大小
     private static final int MIDDLE_AMPLITUDE = 300;
     // 不同类型之间的振幅差距
@@ -57,44 +57,8 @@ public class AppIconView extends View {
         mBitmapPaint.setFilterBitmap(true);
     }
 
-    // 通过叶子信息获取当前叶子的Y值
-    private int getLocationY(AppIcon appIcon) {
-        // y = A(wx+Q)+h
-        float w = (float) ((float) 2 * Math.PI / App.sScreenWidth);
-        float a = mMiddleAmplitude;
-        switch (appIcon.getType()) {
-            case LITTLE:
-                // 小振幅 ＝ 中等振幅 － 振幅差
-                a = mMiddleAmplitude - mAmplitudeDisparity;
-                break;
-            case MIDDLE:
-                a = mMiddleAmplitude;
-                break;
-            case BIG:
-                // 小振幅 ＝ 中等振幅 + 振幅差
-                a = mMiddleAmplitude + mAmplitudeDisparity;
-                break;
-            default:
-                break;
-        }
-        //Log.i(TAG, "---a = " + a + "---w = " + w + "--leaf.x = " + leaf.x);
-        return (int) (a * Math.sin(w * appIcon.getX())) + App.sScreenHeight /2;
-    }
-
-    private void getAppIconLocation(AppIcon appIcon,long currentTime){
-       /* long intervalTime = currentTime - appIcon.getStartTime();
-        if (intervalTime < 0){
-            return;
-        }else if (intervalTime > APP_FLOAT_TIME){
-            appIcon.setStartTime(System.currentTimeMillis() + new Random().nextInt((int)APP_FLOAT_TIME));
-        }
-
-        float fraction = (float) intervalTime / APP_FLOAT_TIME;
-        appIcon.setX(App.sScreenWidth - App.sScreenWidth*fraction);*/
-        if (appIcon.getX()<100){
-
-        }
-        appIcon.setY(getLocationY(appIcon));
+    private void getAppIconLocation(AppIcon appIcon){
+        appIcon.changePoint();
     }
 
     private void drawAppIcon(Canvas canvas){
@@ -102,7 +66,7 @@ public class AppIconView extends View {
         for(int i = 0 ; i < mList.size();i++){
             AppIcon appIcon = mList.get(i);
                 if (currentTime > appIcon.getStartTime()&&appIcon.getStartTime()!=0){
-                    getAppIconLocation(appIcon,currentTime);
+                    getAppIconLocation(appIcon);
                     canvas.save();
 
                     Matrix matrix = new Matrix();
@@ -138,6 +102,8 @@ public class AppIconView extends View {
             mAppBitmap[i] = ((BitmapDrawable)infoList.get(i).getIcon()).getBitmap();
             mAppWidth[i] = mAppBitmap[i].getWidth();
             mAppHeight[i] = mAppBitmap[i].getHeight();
+            mList.get(i).setWidth(mAppWidth[i]);
+            mList.get(i).setHeight(mAppHeight[i]);
         }
     }
 
@@ -158,26 +124,16 @@ public class AppIconView extends View {
             this.mList = list;
         }
 
-        public AppIcon generateAppIcon(AppProcessInfo info){
+        public AppIcon generateAppIcon(AppProcessInfo info,int i){
             AppIcon appIcon = new AppIcon();
-            int randomType = random.nextInt(3);
-            StartType type = StartType.MIDDLE;
 
-            switch (randomType){
-                case 0:
-                    break;
-                case 1:
-                    type = StartType.LITTLE;
-                    break;
-                case 2:
-                    type = StartType.BIG;
-                    break;
-            }
-            appIcon.setType(type);
             appIcon.setRotateAngle(random.nextInt(360));
             appIcon.setRotateDirection(random.nextInt(2));
-            appIcon.setMoveDirection(random.nextInt(2));
-            appIcon.setStartTime(System.currentTimeMillis()+random.nextInt((int)(APP_FLOAT_TIME*1.5)));
+            appIcon.setDegree((int)(Math.random()*Math.PI*2));
+            appIcon.setSpeed(4);
+            appIcon.setX(App.sScreenWidth/2);
+            appIcon.setY(App.sScreenHeight/2);
+            appIcon.setStartTime(System.currentTimeMillis()+i*1500);
             appIcon.setInfo(info);
             return appIcon;
         }
@@ -189,7 +145,7 @@ public class AppIconView extends View {
         private List<AppIcon> generateAppIcons(int appSize){
             List<AppIcon> apps = new LinkedList<>();
             for (int i = 0 ;i < appSize;i++){
-                apps.add(generateAppIcon(mList.get(i)));
+                apps.add(generateAppIcon(mList.get(i),i));
             }
             return apps;
         }

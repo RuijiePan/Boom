@@ -34,25 +34,14 @@ public class IconFactory {
     }
 
     public AppIcon generateAppIcon(AppProcessInfo info){
-        AppIcon appIcon = new AppIcon();
-        int randomType = random.nextInt(3);
-        StartType type = StartType.MIDDLE;
 
-        switch (randomType){
-            case 0:
-                break;
-            case 1:
-                type = StartType.LITTLE;
-                break;
-            case 2:
-                type = StartType.BIG;
-                break;
-        }
-        appIcon.setType(type);
+        AppIcon appIcon = new AppIcon();
+        appIcon.setSpeed(3);
         appIcon.setRotateAngle(random.nextInt(360));
         appIcon.setRotateDirection(random.nextInt(2));
         appIcon.setStartTime(System.currentTimeMillis()+random.nextInt((int)(APP_FLOAT_TIME*1.5)));
         appIcon.setInfo(info);
+        appIcon.setDegree((int)(Math.random()*Math.PI*2));
         return appIcon;
     }
 
@@ -67,6 +56,5 @@ public class IconFactory {
         }
         return apps;
     }
-
 
 }
