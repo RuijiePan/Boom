@@ -13,11 +13,14 @@ import android.view.View;
 import com.jiepier.boom.R;
 import com.jiepier.boom.base.App;
 import com.jiepier.boom.bean.AppProcessInfo;
+import com.jiepier.boom.util.RectCollisionUtil;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 /**
  * Created by panruijiesx on 2016/11/23.
@@ -82,7 +85,33 @@ public class AppIconView extends View {
                     canvas.restore();
                 }
         }
+        checkCollision();
+    }
+
+    private void checkCollision() {
+
+        for (int i = 0;i< mList.size();i++)
+            for (int j =i ;j<mList.size();j++){
+                if (i!=j && RectCollisionUtil.isCollision(mList.get(i),mList.get(j))){
+                    AppIcon app1 = mList.get(i);
+                    AppIcon app2 = mList.get(j);
+                    int degree = app1.getDegree();
+                    app1.setDegree(app2.getDegree());
+                    app2.setDegree(degree);
+
+                    float dx = app2.getX() - app1.getX();
+                    float dy = app2.getY() - app1.getY();
+                    app2.setX((int) (app1.getX() + dx));
+                    app2.setY((int) (app2.getY() + dy));
+                }
+            }
+
+ /*       for (int i=0;i<list.size();i++){
+            mList.get(i).setDegree((int)(Math.random()*Math.PI*2));
+            mList.get(i).changePoint();
+        }*/
         invalidate();
+
     }
 
     public void setAppInfoList(List<AppProcessInfo> infoList){
@@ -130,10 +159,10 @@ public class AppIconView extends View {
             appIcon.setRotateAngle(random.nextInt(360));
             appIcon.setRotateDirection(random.nextInt(2));
             appIcon.setDegree((int)(Math.random()*Math.PI*2));
-            appIcon.setSpeed(4);
+            appIcon.setSpeed(10);
             appIcon.setX(App.sScreenWidth/2);
             appIcon.setY(App.sScreenHeight/2);
-            appIcon.setStartTime(System.currentTimeMillis()+i*1500);
+            appIcon.setStartTime(System.currentTimeMillis()+i*1000);
             appIcon.setInfo(info);
             return appIcon;
         }

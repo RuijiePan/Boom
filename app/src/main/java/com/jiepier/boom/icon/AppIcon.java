@@ -100,6 +100,20 @@ public class AppIcon {
 
         if (x >= App.sScreenWidth - width*1.5||x <= 0)
             degree = (int) (Math.PI-degree);
+
+        if (x<0){
+            x = 0;
+        }
+        if (x>App.sScreenWidth - width*1.5){
+            x = (int) (App.sScreenWidth - width*1.5);
+        }
+
+        if (y<0){
+            y = 0;
+        }
+        if (y>App.sScreenHeight - height*2){
+            y = App.sScreenHeight - height*2;
+        }
     }
 
     public int getWidth() {
@@ -116,5 +130,9 @@ public class AppIcon {
 
     public void setHeight(int height) {
         this.height = height;
+    }
+
+    public void changeDegree(){
+        degree = (int)(Math.random()*Math.PI*2);
     }
 }
