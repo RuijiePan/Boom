@@ -11,20 +11,16 @@ import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.jiepier.boom.R;
 import com.jiepier.boom.bean.AppProcessInfo;
-import com.jiepier.boom.bean.ComparatorAppInfo;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import processes.ProcessManager;
 import processes.models.AndroidAppProcess;
-import processes.models.AndroidProcess;
 
 /**
  * Created by JiePier on 16/11/22.

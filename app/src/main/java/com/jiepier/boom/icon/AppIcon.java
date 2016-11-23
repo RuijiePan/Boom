@@ -2,20 +2,26 @@ package com.jiepier.boom.icon;
 
 import android.graphics.drawable.Drawable;
 
+import com.jiepier.boom.bean.AppProcessInfo;
+
 /**
  * Created by JiePier on 16/11/22.
  */
 
 public class AppIcon {
 
-    //f(x) = ax+z;
     private float x;
     private float y;
+    //振幅
+    private StartType type;
     private int rotateAngle;
+    //旋转方向:顺时针为0，逆时针为1
     private int rotateDirection;
-    private Drawable icon;
-    private float a;
-    private float z;
+    //logo移动方向：顺时针为0.逆时针为1
+    private int moveDirection;
+    //起始时间
+    private long startTime;
+    private AppProcessInfo info;
 
     public float getX() {
         return x;
@@ -31,6 +37,14 @@ public class AppIcon {
 
     public void setY(float y) {
         this.y = y;
+    }
+
+    public StartType getType() {
+        return type;
+    }
+
+    public void setType(StartType type) {
+        this.type = type;
     }
 
     public int getRotateAngle() {
@@ -49,27 +63,27 @@ public class AppIcon {
         this.rotateDirection = rotateDirection;
     }
 
-    public Drawable getIcon() {
-        return icon;
+    public long getStartTime() {
+        return startTime;
     }
 
-    public void setIcon(Drawable icon) {
-        this.icon = icon;
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
     }
 
-    public float getA() {
-        return a;
+    public AppProcessInfo getInfo() {
+        return info;
     }
 
-    public void setA(float a) {
-        this.a = a;
+    public void setInfo(AppProcessInfo info) {
+        this.info = info;
     }
 
-    public float getZ() {
-        return z;
+    public int getMoveDirection() {
+        return moveDirection;
     }
 
-    public void setZ(float z) {
-        this.z = z;
+    public void setMoveDirection(int moveDirection) {
+        this.moveDirection = moveDirection;
     }
 }

@@ -5,22 +5,25 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.IBinder;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.jiepier.boom.R;
 import com.jiepier.boom.base.BaseActivity;
 import com.jiepier.boom.bean.AppProcessInfo;
+import com.jiepier.boom.icon.AppIconView;
 import com.jiepier.boom.service.CleanService;
 
 import java.util.List;
 
-public class MainActivity extends BaseActivity implements CleanService.OnPeocessActionListener{
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
+public class MainActivity extends BaseActivity implements CleanService.OnPeocessActionListener {
+
+    @BindView(R.id.appIconView)
+    AppIconView appIconView;
     private ProgressDialog mProgressDialog;
     private CleanService mCleanService;
 
@@ -48,7 +51,7 @@ public class MainActivity extends BaseActivity implements CleanService.OnPeocess
     public void initUiAndListener() {
         bindService(new Intent(this, CleanService.class),
                 mServiceConnection, Context.BIND_AUTO_CREATE);
-        mProgressDialog = ProgressDialog.show(this,null,"  正在扫描");
+        mProgressDialog = ProgressDialog.show(this, null, "  正在扫描");
     }
 
     @Override
@@ -68,12 +71,15 @@ public class MainActivity extends BaseActivity implements CleanService.OnPeocess
 
     @Override
     public void onScanProgressUpdated(Context context, int current, int max) {
-        mProgressDialog.setMessage("    "+current+"/"+max);
+        mProgressDialog.setMessage("    " + current + "/" + max);
     }
 
     @Override
     public void onScanCompleted(Context context, List<AppProcessInfo> apps) {
         mProgressDialog.dismiss();
+        for (AppProcessInfo info:apps)
+        appIconView.setAppInfoList(apps);
+        appIconView.invalidate();
     }
 
     @Override
@@ -91,4 +97,5 @@ public class MainActivity extends BaseActivity implements CleanService.OnPeocess
         unbindService(mServiceConnection);
         super.onDestroy();
     }
+
 }
