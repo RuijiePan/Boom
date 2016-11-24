@@ -74,8 +74,8 @@ public class MainActivity extends BaseActivity implements CleanService.OnPeocess
             @Override
             public void killProcess(String packageName,int position) {
                 //Log.w("haha","666666666========="+packageName);
-                    mCleanService.killProcess(packageName);
-                    mPosition = position;
+                mCleanService.killProcess(packageName);
+                mPosition = position;
             }
         });
     }

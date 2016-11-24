@@ -26,6 +26,7 @@ public class AppIcon {
     private int width;
     private int height;
     private boolean isKilled;
+    private long killedTime;
 
     public float getX() {
         return x;
@@ -93,27 +94,29 @@ public class AppIcon {
     }
 
     public void changePoint(){
-        x += speed*Math.cos(degree);
-        y += speed*Math.sin(degree);
+        if (!isKilled) {
+            x += speed * Math.cos(degree);
+            y += speed * Math.sin(degree);
 
-        if (y >= App.sScreenHeight - height*2||y<= 0)
-            degree = -degree;
+            if (y >= App.sScreenHeight - height * 2 || y <= 0)
+                degree = -degree;
 
-        if (x >= App.sScreenWidth - width*1.5||x <= 0)
-            degree = (int) (Math.PI-degree);
+            if (x >= App.sScreenWidth - width * 1.5 || x <= 0)
+                degree = (int) (Math.PI - degree);
 
-        if (x<0){
-            x = 0;
-        }
-        if (x>App.sScreenWidth - width*1.5){
-            x = (int) (App.sScreenWidth - width*1.5);
-        }
+            if (x < 0) {
+                x = 0;
+            }
+            if (x > App.sScreenWidth - width * 1.5) {
+                x = (int) (App.sScreenWidth - width * 1.5);
+            }
 
-        if (y<0){
-            y = 0;
-        }
-        if (y>App.sScreenHeight - height*2){
-            y = App.sScreenHeight - height*2;
+            if (y < 0) {
+                y = 0;
+            }
+            if (y > App.sScreenHeight - height * 2) {
+                y = App.sScreenHeight - height * 2;
+            }
         }
     }
 
@@ -143,5 +146,13 @@ public class AppIcon {
 
     public void setKilled(boolean killed) {
         isKilled = killed;
+    }
+
+    public long getKilledTime() {
+        return killedTime;
+    }
+
+    public void setKilledTime(long killedTime) {
+        this.killedTime = killedTime;
     }
 }

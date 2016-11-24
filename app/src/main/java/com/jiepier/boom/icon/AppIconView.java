@@ -13,6 +13,7 @@ import android.view.View;
 import com.jiepier.boom.R;
 import com.jiepier.boom.base.App;
 import com.jiepier.boom.bean.AppProcessInfo;
+import com.jiepier.boom.util.BitmapUtil;
 import com.jiepier.boom.util.RectCollisionUtil;
 
 import java.util.ArrayList;
@@ -29,14 +30,7 @@ import java.util.Set;
 public class AppIconView extends View {
 
     public static final int APP_FLOAT_TIME = 5000;
-    // 中等振幅大小
-    private static final int MIDDLE_AMPLITUDE = 300;
-    // 不同类型之间的振幅差距
-    private static final int AMPLITUDE_DISPARITY = 100;
-    // 中等振幅大小
-    private int mMiddleAmplitude = MIDDLE_AMPLITUDE;
-    // 振幅差
-    private int mAmplitudeDisparity = AMPLITUDE_DISPARITY;
+    public static final int FADE_OUT_TIME = 1000;
 
     private List<AppIcon> mList = new ArrayList<>();
     private List<AppProcessInfo> infoList = new ArrayList<>();
@@ -67,7 +61,7 @@ public class AppIconView extends View {
         long currentTime = System.currentTimeMillis();
         for(int i = 0 ; i < mList.size();i++){
             AppIcon appIcon = mList.get(i);
-                if (!appIcon.isKilled()&&currentTime > appIcon.getStartTime()&&appIcon.getStartTime()!=0){
+                if (currentTime > appIcon.getStartTime()&&appIcon.getStartTime()!=0){
                     getAppIconLocation(appIcon);
                     canvas.save();
 
@@ -80,8 +74,16 @@ public class AppIconView extends View {
                     int angle = (int)(rotateFraction * 360);
                     int rotate = appIcon.getRotateDirection() == 0? angle + appIcon.getRotateAngle(): -angle+appIcon.getRotateAngle();
                     matrix.postRotate(rotate,transX + mAppWidth[i]/2 ,transY +mAppHeight[i]/2);
-                    canvas.drawBitmap(mAppBitmap[i],matrix,mBitmapPaint);
 
+                    if (!appIcon.isKilled())
+                        canvas.drawBitmap(mAppBitmap[i],matrix,mBitmapPaint);
+                    else {
+                        long time =  System.currentTimeMillis() - appIcon.getKilledTime();
+                        if (time<FADE_OUT_TIME) {
+                            int percent = (int) (time * 100 / FADE_OUT_TIME) > 100 ? 0 : 100-(int) (time * 100 / FADE_OUT_TIME);
+                            canvas.drawBitmap(BitmapUtil.getTransparentBitmap(mAppBitmap[i], percent), matrix, mBitmapPaint);
+                        }
+                    }
                     canvas.restore();
                 }
         }
@@ -191,6 +193,7 @@ public class AppIconView extends View {
             if (!mList.get(i).isKilled()&&RectCollisionUtil.isCollision(rect,mList.get(i))){
                 mListener.killProcess(mList.get(i).getInfo().getProcessName(),i);
                 mList.get(i).setKilled(true);
+                mList.get(i).setKilledTime(System.currentTimeMillis());
             }
         }
     }
