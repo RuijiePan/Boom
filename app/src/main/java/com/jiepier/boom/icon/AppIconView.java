@@ -33,8 +33,6 @@ public class AppIconView extends View {
     private static final int MIDDLE_AMPLITUDE = 300;
     // 不同类型之间的振幅差距
     private static final int AMPLITUDE_DISPARITY = 100;
-    //logo移动速率
-    private static final float MOVE_SPEED = 0.2f;
     // 中等振幅大小
     private int mMiddleAmplitude = MIDDLE_AMPLITUDE;
     // 振幅差
@@ -46,6 +44,7 @@ public class AppIconView extends View {
     private Paint mBitmapPaint;
     private int[] mAppWidth;
     private int[] mAppHeight;
+    private KillProcessListener mListener;
 
     public AppIconView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -68,7 +67,7 @@ public class AppIconView extends View {
         long currentTime = System.currentTimeMillis();
         for(int i = 0 ; i < mList.size();i++){
             AppIcon appIcon = mList.get(i);
-                if (currentTime > appIcon.getStartTime()&&appIcon.getStartTime()!=0){
+                if (!appIcon.isKilled()&&currentTime > appIcon.getStartTime()&&appIcon.getStartTime()!=0){
                     getAppIconLocation(appIcon);
                     canvas.save();
 
@@ -82,6 +81,7 @@ public class AppIconView extends View {
                     int rotate = appIcon.getRotateDirection() == 0? angle + appIcon.getRotateAngle(): -angle+appIcon.getRotateAngle();
                     matrix.postRotate(rotate,transX + mAppWidth[i]/2 ,transY +mAppHeight[i]/2);
                     canvas.drawBitmap(mAppBitmap[i],matrix,mBitmapPaint);
+
                     canvas.restore();
                 }
         }
@@ -92,7 +92,8 @@ public class AppIconView extends View {
 
         for (int i = 0;i< mList.size();i++)
             for (int j =i ;j<mList.size();j++){
-                if (i!=j && RectCollisionUtil.isCollision(mList.get(i),mList.get(j))){
+                if (i!=j && !mList.get(i).isKilled() && !mList.get(j).isKilled()
+                        &&RectCollisionUtil.isCollision(mList.get(i),mList.get(j))){
                     AppIcon app1 = mList.get(i);
                     AppIcon app2 = mList.get(j);
                     int degree = app1.getDegree();
@@ -134,6 +135,7 @@ public class AppIconView extends View {
             mList.get(i).setWidth(mAppWidth[i]);
             mList.get(i).setHeight(mAppHeight[i]);
         }
+
     }
 
     @Override
@@ -144,6 +146,7 @@ public class AppIconView extends View {
         }
     }
 
+    //工厂类，创建一大波的APP
     private class IconFactory {
 
         private List<AppProcessInfo> mList = new ArrayList<>();
@@ -162,8 +165,9 @@ public class AppIconView extends View {
             appIcon.setSpeed(10);
             appIcon.setX(App.sScreenWidth/2);
             appIcon.setY(App.sScreenHeight/2);
-            appIcon.setStartTime(System.currentTimeMillis()+i*1000);
+            appIcon.setStartTime(System.currentTimeMillis()+i*500);
             appIcon.setInfo(info);
+            appIcon.setKilled(false);
             return appIcon;
         }
 
@@ -180,4 +184,27 @@ public class AppIconView extends View {
         }
 
     }
+
+    public void checkCollisionWithApp(BoomRect rect){
+
+        for (int i=0;i<mList.size();i++){
+            if (!mList.get(i).isKilled()&&RectCollisionUtil.isCollision(rect,mList.get(i))){
+                mListener.killProcess(mList.get(i).getInfo().getProcessName(),i);
+                mList.get(i).setKilled(true);
+            }
+        }
+    }
+
+    public void setKillProcessListener(KillProcessListener listener){
+        this.mListener = listener;
+    }
+
+    public interface KillProcessListener{
+        void killProcess(String packageName,int position);
+    }
+
+    public List<AppIcon> getmList() {
+        return mList;
+    }
+
 }

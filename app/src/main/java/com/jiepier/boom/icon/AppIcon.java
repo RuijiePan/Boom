@@ -25,6 +25,7 @@ public class AppIcon {
     private int speed;
     private int width;
     private int height;
+    private boolean isKilled;
 
     public float getX() {
         return x;
@@ -134,5 +135,13 @@ public class AppIcon {
 
     public void changeDegree(){
         degree = (int)(Math.random()*Math.PI*2);
+    }
+
+    public boolean isKilled() {
+        return isKilled;
+    }
+
+    public void setKilled(boolean killed) {
+        isKilled = killed;
     }
 }

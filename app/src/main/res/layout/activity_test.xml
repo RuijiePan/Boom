@@ -10,13 +10,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.jiepier.boom.ui.MainActivity">
 
-    <com.jiepier.boom.icon.AppIconView
-        android:id="@+id/appIconView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
     <com.jiepier.boom.icon.BoomIconView
-        android:id="@+id/boomIconView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 </RelativeLayout>

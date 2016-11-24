@@ -3,6 +3,7 @@ package com.jiepier.boom.util;
 import android.util.Log;
 
 import com.jiepier.boom.icon.AppIcon;
+import com.jiepier.boom.icon.BoomRect;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,21 @@ public class RectCollisionUtil {
         }else{
             return false;
         }
+    }
+
+    public static boolean isCollision(BoomRect rect, AppIcon icon){
+
+        if (rect.getX() > icon.getX() && rect.getX() > icon.getX() + icon.getWidth()) {
+            return false;
+        } else if (icon.getX() > rect.getX() && icon.getX() > rect.getX() + rect.getWidth()) {
+            return false;
+        } else if (rect.getY() > icon.getY() && rect.getY() > icon.getY() + icon.getHeight()) {
+            return false;
+        } else if (icon.getY() > rect.getY() && icon.getY() > rect.getY() + rect.getHeight()) {
+            return false;
+        }
+        return true;
+
     }
 
     public static List<AppIcon> solverCollison(List<AppIcon> mList){

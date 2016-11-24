@@ -8,7 +8,7 @@ import java.util.Comparator;
  * Created by JiePier on 16/11/22.
  */
 
-public class AppProcessInfo implements Comparable<AppProcessInfo>{
+public class AppProcessInfo {
 
     private String appName;
     private String processName;
@@ -32,7 +32,7 @@ public class AppProcessInfo implements Comparable<AppProcessInfo>{
         this.uid = uid;
     }
 
-    @Override
+/*    @Override
     public int compareTo(AppProcessInfo another) {
         if (this.uid == another.uid){
             if (this.memory < another.memory){
@@ -43,9 +43,9 @@ public class AppProcessInfo implements Comparable<AppProcessInfo>{
                 return -1;
             }
         }else {
-            return this.uid - another.uid;
+            return this.uid - another.uid ;
         }
-    }
+    }*/
 
     public String getAppName() {
         return appName;

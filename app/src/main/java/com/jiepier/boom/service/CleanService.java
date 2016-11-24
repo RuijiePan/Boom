@@ -11,12 +11,15 @@ import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.jiepier.boom.R;
 import com.jiepier.boom.bean.AppProcessInfo;
+import com.jiepier.boom.bean.ComparatorApp;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import processes.ProcessManager;
@@ -126,6 +129,9 @@ public class CleanService extends Service {
                     list.add(abAppProcessInfo);
             }
 
+            //APP去重
+            ComparatorApp comparator = new ComparatorApp();
+            Collections.sort(list,comparator);
             int lastUid = 0;
             int index = -1;
             List<AppProcessInfo> newList = new ArrayList<>();
@@ -135,9 +141,9 @@ public class CleanService extends Service {
                     AppProcessInfo nowInfo = newList.get(index);
                     newList.get(index).setMemory(nowInfo.getMemory()+info.getMemory());
                 }else {
+                    index++;
                     newList.add(info);
                     lastUid = info.getUid();
-                    index++;
                 }
             }
 
@@ -190,12 +196,13 @@ public class CleanService extends Service {
                 packageName = processName.split(":")[0];
             }
 
+            //Log.w("haha","666666666========="+packageName);
+            //activityManager.killBackgroundProcesses("com.jiepier.pictureflash");
             activityManager.killBackgroundProcesses(packageName);
-
-            Method forceStopPackage = activityManager.getClass()
+            /*Method forceStopPackage = activityManager.getClass()
                     .getDeclaredMethod("forceStopPackage",String.class);
             forceStopPackage.setAccessible(true);
-            forceStopPackage.invoke(activityManager,packageName);
+            forceStopPackage.invoke(activityManager,packageName);*/
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -212,10 +219,18 @@ public class CleanService extends Service {
 
             activityManager.getMemoryInfo(memoryInfo);
             beforeMemory = memoryInfo.availMem;
-            killBackgroundProcesses(processName[0]);
+
+            List<AndroidAppProcess> appProcessList = ProcessManager.getRunningAppProcesses();
+            for (AndroidAppProcess info : appProcessList) {
+                if (info.getPackageName().equals(processName[0]))
+                killBackgroundProcesses(processName[0]);
+            }
+            //Log.w("haha",processName[0]);
+            //killBackgroundProcesses(processName[0]);
             activityManager.getMemoryInfo(memoryInfo);
             endMemory = memoryInfo.availMem;
 
+            Log.w("haha",endMemory - beforeMemory+"");
             return endMemory - beforeMemory;
         }
 
@@ -261,7 +276,7 @@ public class CleanService extends Service {
         mOnActionListener = listener;
     }
 
-    public static interface OnPeocessActionListener {
+    public  interface OnPeocessActionListener {
         public void onScanStarted(Context context);
 
         public void onScanProgressUpdated(Context context, int current, int max);
