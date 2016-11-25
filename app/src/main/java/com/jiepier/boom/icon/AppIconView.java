@@ -3,9 +3,14 @@ package com.jiepier.boom.icon;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.NinePatchDrawable;
+import android.graphics.drawable.VectorDrawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -78,7 +83,7 @@ public class AppIconView extends View {
                     if (!appIcon.isKilled())
                         canvas.drawBitmap(mAppBitmap[i],matrix,mBitmapPaint);
                     else {
-                        long time =  System.currentTimeMillis() - appIcon.getKilledTime();
+                        long time =  currentTime - appIcon.getKilledTime();
                         if (time<FADE_OUT_TIME) {
                             int percent = (int) (time * 100 / FADE_OUT_TIME) > 100 ? 0 : 100-(int) (time * 100 / FADE_OUT_TIME);
                             canvas.drawBitmap(BitmapUtil.getTransparentBitmap(mAppBitmap[i], percent), matrix, mBitmapPaint);
@@ -131,7 +136,16 @@ public class AppIconView extends View {
 
         for (int i = 0;i<infoList.size();i++){
             //mAppBitmap[i] = ((BitmapDrawable)getResources().getDrawable(R.mipmap.ic_launcher)).getBitmap();
-            mAppBitmap[i] = ((BitmapDrawable)infoList.get(i).getIcon()).getBitmap();
+            if (infoList.get(i).getIcon() instanceof BitmapDrawable) {
+                mAppBitmap[i] = ((BitmapDrawable) infoList.get(i).getIcon()).getBitmap();
+            }else {
+                //drawable instanceof VectorDrawable
+                Bitmap bitmap = Bitmap.createBitmap(infoList.get(i).getIcon().getIntrinsicWidth(), infoList.get(i).getIcon().getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas(bitmap);
+                infoList.get(i).getIcon().setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+                infoList.get(i).getIcon().draw(canvas);
+                mAppBitmap[i] = bitmap;
+            }
             mAppWidth[i] = mAppBitmap[i].getWidth();
             mAppHeight[i] = mAppBitmap[i].getHeight();
             mList.get(i).setWidth(mAppWidth[i]);

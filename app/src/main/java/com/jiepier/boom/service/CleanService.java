@@ -102,7 +102,8 @@ public class CleanService extends Service {
                     }else {
                         abAppProcessInfo.setSystem(false);
                     }
-                    Drawable icon = appInfo.loadIcon(packageManager);
+                    Drawable icon = appInfo.loadIcon(packageManager)==null?
+                            getResources().getDrawable(R.mipmap.ic_launcher):appInfo.loadIcon(packageManager);
                     String name = appInfo.loadLabel(packageManager).toString();
                     abAppProcessInfo.setIcon(icon);
                     abAppProcessInfo.setAppName(name);
@@ -230,7 +231,7 @@ public class CleanService extends Service {
             activityManager.getMemoryInfo(memoryInfo);
             endMemory = memoryInfo.availMem;
 
-            Log.w("haha",endMemory - beforeMemory+"");
+            //Log.w("haha",endMemory - beforeMemory+"");
             return endMemory - beforeMemory;
         }
 
