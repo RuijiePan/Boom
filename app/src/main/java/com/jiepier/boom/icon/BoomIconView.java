@@ -20,6 +20,7 @@ import android.view.View;
 import com.jiepier.boom.R;
 import com.jiepier.boom.base.App;
 import com.jiepier.boom.util.AngelUtil;
+import com.jiepier.boom.util.TouchUtil;
 
 /**
  * Created by panruijiesx on 2016/11/24.
@@ -44,6 +45,7 @@ public class BoomIconView extends View implements View.OnTouchListener{
     private double speed;
     private double degree;
     private boolean isMove;
+    private boolean isTouchView;
     private long startTime;
     private OnMoveListener mListener;
 
@@ -52,9 +54,13 @@ public class BoomIconView extends View implements View.OnTouchListener{
 
         initPaint();
         initBitmap();
-        isMove = true;
-        startTime = System.currentTimeMillis();
+        initData();
         setOnTouchListener(this);
+    }
+
+    private void initData() {
+        isMove = true;
+        isTouchView = false;
     }
 
     private void initPaint() {
@@ -62,6 +68,8 @@ public class BoomIconView extends View implements View.OnTouchListener{
         mBitmapPaint.setAntiAlias(true);
         mBitmapPaint.setDither(true);
         mBitmapPaint.setFilterBitmap(true);
+        mBitmapPaint.setStrokeWidth(5);
+        mBitmapPaint.setStyle(Paint.Style.STROKE);
     }
 
     private void initBitmap() {
@@ -83,7 +91,9 @@ public class BoomIconView extends View implements View.OnTouchListener{
         long currentTime = System.currentTimeMillis();
         float transX = App.sScreenWidth/2-mWidth/2+dx;
         float transY = App.sScreenHeight/2-mHeight/2+dy;
-        matrix.postRotate((currentTime-startTime)%APP_FLOAT_TIME/(float)APP_FLOAT_TIME*360,transX,transY);
+        if (!isMove) {
+            matrix.postRotate((currentTime - startTime) % APP_FLOAT_TIME / (float) APP_FLOAT_TIME * 360, transX, transY);
+        }
         canvas.drawBitmap(mBitmap,matrix,mBitmapPaint);
 
         //画箭头
@@ -105,7 +115,8 @@ public class BoomIconView extends View implements View.OnTouchListener{
             canvas.drawLine(pointDownX,pointDownY, mLastX,mLastY, mBitmapPaint);
             canvas.drawLine(pointDownX,pointDownY,(float)x1,(float)y1,mBitmapPaint);
             canvas.drawLine(pointDownX,pointDownY,(float)x2,(float)y2,mBitmapPaint);
-
+            canvas.drawCircle(App.sScreenWidth/2-mWidth/2+dx,
+                    App.sScreenHeight/2-mHeight/2+dy,mWidth/4,mBitmapPaint);
         }
 
         if (!isMove){
@@ -123,34 +134,44 @@ public class BoomIconView extends View implements View.OnTouchListener{
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                isMove = true;
-                pointDownX = x;
-                pointDownY = y;
-                speed = 0;
-                break;
+                if (TouchUtil.isTouchView(x,y,App.sScreenWidth/2-mWidth+dx,App.sScreenHeight/2-mHeight+dy,mWidth,mHeight)) {
+                    isMove = true;
+                    isTouchView = true;
+                    pointDownX = x;
+                    pointDownY = y;
+                    speed = 0;
+                }else {
+                    isTouchView = false;
+                }
+                    break;
             case MotionEvent.ACTION_MOVE:
-                int dx = mLastX - x;
-                int dy = mLastY - y;
+                if (isTouchView) {
+                    int dx = mLastX - x;
+                    int dy = mLastY - y;
 
-                if (App.sScreenWidth/2-mWidth+this.dx-dx<0)
-                    dx = 0;
-                if (App.sScreenWidth/2+this.dx-dx>App.sScreenWidth-mWidth)
-                    dx = 0;
-                if (App.sScreenHeight/2-mHeight+this.dy-dy<0)
-                    dy = 0;
-                if (App.sScreenHeight/2+this.dy-dy>App.sScreenHeight-mHeight)
-                    dy = 0;
-                changePoint(dx,dy);
-                break;
+                    if (App.sScreenWidth / 2 - mWidth + this.dx - dx < 0)
+                        dx = 0;
+                    if (App.sScreenWidth / 2 + this.dx - dx > App.sScreenWidth - mWidth)
+                        dx = 0;
+                    if (App.sScreenHeight / 2 - mHeight + this.dy - dy < 0)
+                        dy = 0;
+                    if (App.sScreenHeight / 2 + this.dy - dy > App.sScreenHeight - mHeight)
+                        dy = 0;
+                    changePoint(dx, dy);
+                }
+                    break;
             case MotionEvent.ACTION_UP:
-                isMove = false;
-                speed = Math.sqrt(
-                        (pointDownX-mLastX)*(pointDownX-mLastX)
-                        +(pointDownY-mLastY)*(pointDownY-mLastY)
-                )/20;
-                degree = AngelUtil.CalulateXYAnagle(pointDownX,pointDownY,x,y)/180*Math.PI;
-                //Log.w("haha",degree+"");
-                Moving();
+                if (isTouchView) {
+                    isMove = false;
+                    speed = Math.sqrt(
+                            (pointDownX - mLastX) * (pointDownX - mLastX)
+                                    + (pointDownY - mLastY) * (pointDownY - mLastY)
+                    ) / 20;
+                    startTime = System.currentTimeMillis();
+                    degree = AngelUtil.CalulateXYAnagle(pointDownX, pointDownY, x, y) / 180 * Math.PI;
+                    //Log.w("haha",degree+"");
+                    Moving();
+                }
                 break;
 
         }
