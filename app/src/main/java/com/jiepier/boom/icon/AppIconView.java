@@ -86,7 +86,7 @@ public class AppIconView extends View {
                         long time =  currentTime - appIcon.getKilledTime();
                         if (time<FADE_OUT_TIME) {
                             int percent = (int) (time * 100 / FADE_OUT_TIME) > 100 ? 0 : 100-(int) (time * 100 / FADE_OUT_TIME);
-                            canvas.drawBitmap(BitmapUtil.getTransparentBitmap(mAppBitmap[i], percent), matrix, mBitmapPaint);
+                            canvas.drawBitmap(BitmapUtil.adjustOpacity(mAppBitmap[i], percent), matrix, mBitmapPaint);
                         }
                     }
                     canvas.restore();

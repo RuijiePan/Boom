@@ -39,7 +39,6 @@ public class BoomIconView extends View implements View.OnTouchListener{
     private int mLastY;
     private int dx;
     private int dy;
-    private int rotateAngle;
     private int pointDownX;
     private int pointDownY;
     private double speed;
@@ -53,7 +52,7 @@ public class BoomIconView extends View implements View.OnTouchListener{
 
         initPaint();
         initBitmap();
-        isMove = false;
+        isMove = true;
         startTime = System.currentTimeMillis();
         setOnTouchListener(this);
     }
@@ -78,10 +77,13 @@ public class BoomIconView extends View implements View.OnTouchListener{
         super.onDraw(canvas);
 
         canvas.save();
+        //画boom图像
         Matrix matrix = new Matrix();
         matrix.postTranslate(App.sScreenWidth/2-mWidth+dx,App.sScreenHeight/2-mHeight+dy);
         long currentTime = System.currentTimeMillis();
-        matrix.postRotate((currentTime-startTime)%APP_FLOAT_TIME*360);
+        float transX = App.sScreenWidth/2-mWidth/2+dx;
+        float transY = App.sScreenHeight/2-mHeight/2+dy;
+        matrix.postRotate((currentTime-startTime)%APP_FLOAT_TIME/(float)APP_FLOAT_TIME*360,transX,transY);
         canvas.drawBitmap(mBitmap,matrix,mBitmapPaint);
 
         //画箭头
@@ -206,6 +208,7 @@ public class BoomIconView extends View implements View.OnTouchListener{
     private void changePoint(double dx,double dy){
         this.dx -= dx;
         this.dy -= dy;
+        if (!isMove)
         mListener.onMove(getRect());
     }
 
