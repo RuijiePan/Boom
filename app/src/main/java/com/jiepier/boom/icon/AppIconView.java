@@ -135,8 +135,9 @@ public class AppIconView extends View {
         mAppHeight = new int[infoList.size()];
 
         for (int i = 0;i<infoList.size();i++){
+            mAppBitmap[i] = BitmapUtil.getBitmapFromDrawable(infoList.get(i).getIcon());
             //mAppBitmap[i] = ((BitmapDrawable)getResources().getDrawable(R.mipmap.ic_launcher)).getBitmap();
-            if (infoList.get(i).getIcon() instanceof BitmapDrawable) {
+            /*if (infoList.get(i).getIcon() instanceof BitmapDrawable) {
                 mAppBitmap[i] = ((BitmapDrawable) infoList.get(i).getIcon()).getBitmap();
             }else {
                 //drawable instanceof VectorDrawable
@@ -145,7 +146,7 @@ public class AppIconView extends View {
                 infoList.get(i).getIcon().setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
                 infoList.get(i).getIcon().draw(canvas);
                 mAppBitmap[i] = bitmap;
-            }
+            }*/
             mAppWidth[i] = mAppBitmap[i].getWidth();
             mAppHeight[i] = mAppBitmap[i].getHeight();
             mList.get(i).setWidth(mAppWidth[i]);

@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 
 /**
  * Created by panruijiesx on 2016/11/24.
@@ -29,5 +31,20 @@ public class BitmapUtil {
                 .getHeight(), Bitmap.Config.ARGB_8888);
 
         return sourceImg;
+    }
+
+    public static Bitmap getBitmapFromDrawable(Drawable drawable){
+
+        Bitmap bitmap;
+        if (drawable instanceof BitmapDrawable) {
+            bitmap = ((BitmapDrawable) drawable).getBitmap();
+        }else {
+            //drawable instanceof VectorDrawable
+            bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+            drawable.draw(canvas);
+        }
+        return bitmap;
     }
 }

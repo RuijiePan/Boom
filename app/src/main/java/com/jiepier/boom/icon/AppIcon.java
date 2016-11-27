@@ -98,24 +98,24 @@ public class AppIcon {
             x += speed * Math.cos(degree);
             y += speed * Math.sin(degree);
 
-            if (y >= App.sScreenHeight - height * 2 || y <= 0)
+            if (y >= App.sScreenHeight - height  || y <= 0)
                 degree = -degree;
 
-            if (x >= App.sScreenWidth - width * 1.5 || x <= 0)
+            if (x >= App.sScreenWidth - width  || x <= 0)
                 degree = (int) (Math.PI - degree);
 
             if (x < 0) {
                 x = 0;
             }
-            if (x > App.sScreenWidth - width * 1.5) {
-                x = (int) (App.sScreenWidth - width * 1.5);
+            if (x > App.sScreenWidth - width ) {
+                x = (int) (App.sScreenWidth - width);
             }
 
             if (y < 0) {
                 y = 0;
             }
-            if (y > App.sScreenHeight - height * 2) {
-                y = App.sScreenHeight - height * 2;
+            if (y > App.sScreenHeight - height ) {
+                y = App.sScreenHeight - height ;
             }
         }
     }

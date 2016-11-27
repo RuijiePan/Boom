@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
@@ -18,6 +19,7 @@ import android.view.View;
 
 import com.jiepier.boom.R;
 import com.jiepier.boom.base.App;
+import com.jiepier.boom.util.AngelUtil;
 
 /**
  * Created by panruijiesx on 2016/11/24.
@@ -25,6 +27,10 @@ import com.jiepier.boom.base.App;
 
 public class BoomIconView extends View implements View.OnTouchListener{
 
+    public static final int APP_FLOAT_TIME = 5000;
+    public static final int ARROW_ANGLE1 = -15;
+    public static final int ARROW_ANGLE2 = 15;
+    public static final int ARROW_LENGTH = 30;
     private Paint mBitmapPaint;
     private Bitmap mBitmap;
     private int mWidth;
@@ -33,6 +39,13 @@ public class BoomIconView extends View implements View.OnTouchListener{
     private int mLastY;
     private int dx;
     private int dy;
+    private int rotateAngle;
+    private int pointDownX;
+    private int pointDownY;
+    private double speed;
+    private double degree;
+    private boolean isMove;
+    private long startTime;
     private OnMoveListener mListener;
 
     public BoomIconView(Context context, AttributeSet attrs) {
@@ -40,6 +53,8 @@ public class BoomIconView extends View implements View.OnTouchListener{
 
         initPaint();
         initBitmap();
+        isMove = false;
+        startTime = System.currentTimeMillis();
         setOnTouchListener(this);
     }
 
@@ -52,7 +67,7 @@ public class BoomIconView extends View implements View.OnTouchListener{
 
     private void initBitmap() {
         mBitmap = ((BitmapDrawable)getResources()
-                .getDrawable(R.drawable.ic_airplanemode_active_indigo_a200_36dp))
+                .getDrawable(R.drawable.ic_airplancemode_active_indigo_a200_36dp))
                 .getBitmap();
         mWidth = mBitmap.getWidth();
         mHeight = mBitmap.getHeight();
@@ -65,9 +80,37 @@ public class BoomIconView extends View implements View.OnTouchListener{
         canvas.save();
         Matrix matrix = new Matrix();
         matrix.postTranslate(App.sScreenWidth/2-mWidth+dx,App.sScreenHeight/2-mHeight+dy);
+        long currentTime = System.currentTimeMillis();
+        matrix.postRotate((currentTime-startTime)%APP_FLOAT_TIME*360);
         canvas.drawBitmap(mBitmap,matrix,mBitmapPaint);
-        canvas.restore();
 
+        //画箭头
+        if (isMove){
+            //先画直线
+            double dx1 = (mLastX-pointDownX)*Math.cos(ARROW_ANGLE1) -
+                    (mLastY-pointDownY)*Math.sin(ARROW_ANGLE1) ;
+            double dy1 = (mLastY-pointDownY)*Math.cos(ARROW_ANGLE1) +
+                    (mLastX-pointDownX)*Math.sin(ARROW_ANGLE1);
+            double dx2 = (mLastX-pointDownX)*Math.cos(ARROW_ANGLE2) -
+                    (mLastY-pointDownY)*Math.sin(ARROW_ANGLE2) ;
+            double dy2 = (mLastY-pointDownY)*Math.cos(ARROW_ANGLE2) +
+                    (mLastX-pointDownX)*Math.sin(ARROW_ANGLE2);
+            double hypoLen = Math.sqrt(dx1*dx1+dy1*dy1);
+            double x1 = pointDownX-ARROW_LENGTH/hypoLen*dx1;
+            double y1 = pointDownY-ARROW_LENGTH/hypoLen*dy1;
+            double x2 = pointDownX-ARROW_LENGTH/hypoLen*dx2;
+            double y2 = pointDownY-ARROW_LENGTH/hypoLen*dy2;
+            canvas.drawLine(pointDownX,pointDownY, mLastX,mLastY, mBitmapPaint);
+            canvas.drawLine(pointDownX,pointDownY,(float)x1,(float)y1,mBitmapPaint);
+            canvas.drawLine(pointDownX,pointDownY,(float)x2,(float)y2,mBitmapPaint);
+
+        }
+
+        if (!isMove){
+            Moving();
+        }
+        canvas.restore();
+        invalidate();
     }
 
     @Override
@@ -77,6 +120,12 @@ public class BoomIconView extends View implements View.OnTouchListener{
         int y = (int) event.getY();
 
         switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                isMove = true;
+                pointDownX = x;
+                pointDownY = y;
+                speed = 0;
+                break;
             case MotionEvent.ACTION_MOVE:
                 int dx = mLastX - x;
                 int dy = mLastY - y;
@@ -87,20 +136,76 @@ public class BoomIconView extends View implements View.OnTouchListener{
                     dx = 0;
                 if (App.sScreenHeight/2-mHeight+this.dy-dy<0)
                     dy = 0;
-                if (App.sScreenHeight/2+this.dy-dy>App.sScreenHeight-mHeight*1.5)
+                if (App.sScreenHeight/2+this.dy-dy>App.sScreenHeight-mHeight)
                     dy = 0;
                 changePoint(dx,dy);
                 break;
+            case MotionEvent.ACTION_UP:
+                isMove = false;
+                speed = Math.sqrt(
+                        (pointDownX-mLastX)*(pointDownX-mLastX)
+                        +(pointDownY-mLastY)*(pointDownY-mLastY)
+                )/20;
+                degree = AngelUtil.CalulateXYAnagle(pointDownX,pointDownY,x,y)/180*Math.PI;
+                //Log.w("haha",degree+"");
+                Moving();
+                break;
+
         }
         mLastX = x;
         mLastY = y;
         return true;
     }
 
-    private void changePoint(int dx,int dy){
+    private void Moving() {
+
+        double dx = -speed * Math.cos(degree);
+        double dy = speed * Math.sin(degree);
+
+        /*if (App.sScreenWidth/2-mWidth+this.dx-dx<0)
+            degree = -degree;
+        if (App.sScreenWidth/2+dx>App.sScreenWidth-mWidth)
+            degree = -degree;
+        if (App.sScreenHeight/2-mHeight+dy<0)
+            degree = Math.PI-degree;
+        if (App.sScreenHeight/2+dy>App.sScreenHeight-mHeight)
+            degree = Math.PI-degree;*/
+
+        //Log.w("haha",Math.cos(degree)+"!!"+Math.sin(degree));
+        if (App.sScreenWidth/2-mWidth+this.dx-dx<0) {
+            dx = 0;
+            degree = Math.PI - degree;
+        }
+        if (App.sScreenWidth/2+this.dx-dx>App.sScreenWidth-mWidth) {
+            dx = 0;
+            degree = Math.PI - degree;
+        }
+        if (App.sScreenHeight/2-mHeight+this.dy-dy<0) {
+            dy = 0;
+            degree = -degree;
+        }
+        if (App.sScreenHeight/2+this.dy-dy>App.sScreenHeight-mHeight){
+            dy = 0;
+            degree = - degree;
+        }
+        changePoint(dx,dy);
+
+        /*if (dx<-(App.sScreenWidth/2-mWidth)) {
+            dx = -(App.sScreenWidth/2-mWidth);
+        }else if (dx > App.sScreenWidth/2){
+            dx = App.sScreenWidth/2;
+        }
+
+        if (dy<-(App.sScreenHeight/2-mHeight)){
+            dy = -(App.sScreenHeight/2-mHeight);
+        }else if (dy > App.sScreenHeight/2){
+            dy = App.sScreenHeight/2;
+        }*/
+    }
+
+    private void changePoint(double dx,double dy){
         this.dx -= dx;
         this.dy -= dy;
-        invalidate();
         mListener.onMove(getRect());
     }
 
