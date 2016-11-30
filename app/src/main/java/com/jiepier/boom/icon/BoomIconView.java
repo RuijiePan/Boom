@@ -20,6 +20,7 @@ import android.view.View;
 import com.jiepier.boom.R;
 import com.jiepier.boom.base.App;
 import com.jiepier.boom.util.AngelUtil;
+import com.jiepier.boom.util.ImageTools;
 import com.jiepier.boom.util.TouchUtil;
 
 /**
@@ -45,6 +46,7 @@ public class BoomIconView extends View implements View.OnTouchListener{
     private double speed;
     private double degree;
     private boolean isMove;
+    private boolean isStrat;
     private boolean isTouchView;
     private long startTime;
     private OnMoveListener mListener;
@@ -61,6 +63,7 @@ public class BoomIconView extends View implements View.OnTouchListener{
     private void initData() {
         isMove = true;
         isTouchView = false;
+        isStrat = false;
     }
 
     private void initPaint() {
@@ -73,9 +76,11 @@ public class BoomIconView extends View implements View.OnTouchListener{
     }
 
     private void initBitmap() {
-        mBitmap = ((BitmapDrawable)getResources()
+        mBitmap = ImageTools.createBitmapBySize(
+                ((BitmapDrawable)getResources()
                 .getDrawable(R.drawable.ic_airplancemode_active_indigo_a200_36dp))
-                .getBitmap();
+                .getBitmap(),
+                128,128);
         mWidth = mBitmap.getWidth();
         mHeight = mBitmap.getHeight();
     }
@@ -97,8 +102,10 @@ public class BoomIconView extends View implements View.OnTouchListener{
         canvas.drawBitmap(mBitmap,matrix,mBitmapPaint);
 
         //画箭头
-        if (isMove){
+        if (isMove&&isStrat){
             //先画直线
+            int mLastX = App.sScreenWidth/2-mWidth/2+dx;
+            int mLastY = App.sScreenHeight/2-mHeight/2+dy;
             double dx1 = (mLastX-pointDownX)*Math.cos(ARROW_ANGLE1) -
                     (mLastY-pointDownY)*Math.sin(ARROW_ANGLE1) ;
             double dy1 = (mLastY-pointDownY)*Math.cos(ARROW_ANGLE1) +
@@ -136,6 +143,7 @@ public class BoomIconView extends View implements View.OnTouchListener{
             case MotionEvent.ACTION_DOWN:
                 if (TouchUtil.isTouchView(x,y,App.sScreenWidth/2-mWidth+dx,App.sScreenHeight/2-mHeight+dy,mWidth,mHeight)) {
                     isMove = true;
+                    isStrat = true;
                     isTouchView = true;
                     pointDownX = x;
                     pointDownY = y;
@@ -149,13 +157,13 @@ public class BoomIconView extends View implements View.OnTouchListener{
                     int dx = mLastX - x;
                     int dy = mLastY - y;
 
-                    if (App.sScreenWidth / 2 - mWidth + this.dx - dx < 0)
+                    if (App.sScreenWidth / 2 -mWidth + this.dx - dx < 0)
                         dx = 0;
-                    if (App.sScreenWidth / 2 + this.dx - dx > App.sScreenWidth - mWidth)
+                    if (App.sScreenWidth / 2 + this.dx - dx > App.sScreenWidth )
                         dx = 0;
-                    if (App.sScreenHeight / 2 - mHeight + this.dy - dy < 0)
+                    if (App.sScreenHeight / 2 -mHeight + this.dy - dy < 0)
                         dy = 0;
-                    if (App.sScreenHeight / 2 + this.dy - dy > App.sScreenHeight - mHeight)
+                    if (App.sScreenHeight / 2 + this.dy - dy > App.sScreenHeight )
                         dy = 0;
                     changePoint(dx, dy);
                 }
@@ -199,7 +207,7 @@ public class BoomIconView extends View implements View.OnTouchListener{
             dx = 0;
             degree = Math.PI - degree;
         }
-        if (App.sScreenWidth/2+this.dx-dx>App.sScreenWidth-mWidth) {
+        if (App.sScreenWidth/2+this.dx-dx>App.sScreenWidth) {
             dx = 0;
             degree = Math.PI - degree;
         }
@@ -207,7 +215,7 @@ public class BoomIconView extends View implements View.OnTouchListener{
             dy = 0;
             degree = -degree;
         }
-        if (App.sScreenHeight/2+this.dy-dy>App.sScreenHeight-mHeight){
+        if (App.sScreenHeight/2+this.dy-dy>App.sScreenHeight){
             dy = 0;
             degree = - degree;
         }

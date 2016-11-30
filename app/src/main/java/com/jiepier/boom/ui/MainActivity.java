@@ -87,7 +87,7 @@ public class MainActivity extends BaseActivity implements CleanService.OnPeocess
 
     @Override
     protected boolean isApplyStatusBarColor() {
-        return true;
+        return false;
     }
 
     @Override

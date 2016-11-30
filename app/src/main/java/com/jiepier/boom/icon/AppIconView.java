@@ -19,6 +19,7 @@ import com.jiepier.boom.R;
 import com.jiepier.boom.base.App;
 import com.jiepier.boom.bean.AppProcessInfo;
 import com.jiepier.boom.util.BitmapUtil;
+import com.jiepier.boom.util.ImageTools;
 import com.jiepier.boom.util.RectCollisionUtil;
 
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ public class AppIconView extends View {
 
     public static final int APP_FLOAT_TIME = 5000;
     public static final int FADE_OUT_TIME = 1000;
-
+    public static final int DISTANCE = 5;
     private List<AppIcon> mList = new ArrayList<>();
     private List<AppProcessInfo> infoList = new ArrayList<>();
     private Bitmap[] mAppBitmap;
@@ -107,14 +108,52 @@ public class AppIconView extends View {
                     app1.setDegree(app2.getDegree());
                     app2.setDegree(degree);
 
+                    while (RectCollisionUtil.isCollision(mList.get(i),mList.get(j))){
+                        /*app1.changePoint();
+                        app2.changePoint();*/
+                        if (app1.getX()<app2.getX()){
+                            app1.setX((int) (app1.getX()-1));
+                            app2.setX((int) (app2.getX()+1));
+                            if (app1.getY()<app2.getY()){
+                                app1.setY((int) (app1.getY()-1));
+                                app2.setY((int) (app2.getY()+1));
+                            }else {
+                                app1.setY((int) (app1.getY()+1));
+                                app2.setY((int) (app2.getY()-1));
+                            }
+                        }else {
+                            app1.setX((int) (app1.getX()+1));
+                            app2.setX((int) (app2.getX()-1));
+                            if (app1.getY()<app2.getY()){
+                                app1.setY((int) (app1.getY()-1));
+                                app2.setY((int) (app2.getY()+1));
+                            }else {
+                                app1.setY((int) (app1.getY()+1));
+                                app2.setY((int) (app2.getY()-1));
+                            }
+                        }
+                    }
+                    /*app1.changePoint();
+                    app2.changePoint();*/
+                    /*float[] d = RectCollisionUtil.getDxDy(app1.getX(),app1.getY(),app1.getWidth(),app2.getX(),app2.getY(),app2.getWidth());
                     float dx = app2.getX() - app1.getX();
                     float dy = app2.getY() - app1.getY();
+
+                    *//*if (dx>0)
+                        dx = app2.getWidth()-dx;
+                    else
+                        dx = -(app2.getWidth()+dx);
+
+                    if(dy>0)
+                        dy = app2.getHeight()-dy;
+                    else
+                        dy = -(app2.getHeight()+dy);*//*
                     app2.setX((int) (app1.getX() + dx));
-                    app2.setY((int) (app2.getY() + dy));
+                    app2.setY((int) (app2.getY() + dy));*/
                 }
             }
 
- /*       for (int i=0;i<list.size();i++){
+        /*for (int i=0;i<list.size();i++){
             mList.get(i).setDegree((int)(Math.random()*Math.PI*2));
             mList.get(i).changePoint();
         }*/

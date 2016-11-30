@@ -71,4 +71,21 @@ public class RectCollisionUtil {
 
         return mList;
     }
+
+    public static float[] getDxDy(float x1,float y1,int width1,
+                                  float x2,float y2,int width2){
+        float[] d = new float[2];
+        if(x1<x2){
+            d[0] = width1/2+width2/2-(x2 - x1);
+        }else {
+            d[0] = x1 - x2 - (width1/2+width2/2);
+        }
+
+        if (y1<y2){
+            d[1] = width1/2+width2/2-(y2 - y1);
+        }else{
+            d[1] = y1 - y2- (width1/2+width2/2);
+        }
+        return d;
+    }
 }

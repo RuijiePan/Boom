@@ -155,4 +155,14 @@ public class AppIcon {
     public void setKilledTime(long killedTime) {
         this.killedTime = killedTime;
     }
+
+    public void rightOnePoint(){
+        x += 1;
+        y += 1;
+    }
+
+    public void leftOnePoint(){
+        x -= 1;
+        y -= 1;
+    }
 }
