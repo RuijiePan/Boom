@@ -78,7 +78,7 @@ public class BoomIconView extends View implements View.OnTouchListener{
     private void initBitmap() {
         mBitmap = ImageTools.createBitmapBySize(
                 ((BitmapDrawable)getResources()
-                .getDrawable(R.drawable.ic_airplancemode_active_indigo_a200_36dp))
+                .getDrawable(R.drawable.ic_airplanemode_active_indigo_a200_36dp))
                 .getBitmap(),
                 128,128);
         mWidth = mBitmap.getWidth();

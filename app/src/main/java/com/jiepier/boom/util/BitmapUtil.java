@@ -100,5 +100,55 @@ public class BitmapUtil {
 
     }
 
+    public static Drawable resizeImage2(String path,
+                                        int width,int height)
+    {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;//不加载bitmap到内存中
+        BitmapFactory.decodeFile(path,options);
+        int outWidth = options.outWidth;
+        int outHeight = options.outHeight;
+        options.inDither = false;
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        options.inSampleSize = 1;
 
+        if (outWidth != 0 && outHeight != 0 && width != 0 && height != 0)
+        {
+            int sampleSize=(outWidth/width+outHeight/height)/2;
+            //Log.d(tag, "sampleSize = " + sampleSize);
+            options.inSampleSize = sampleSize;
+        }
+
+        options.inJustDecodeBounds = false;
+        return new BitmapDrawable(BitmapFactory.decodeFile(path, options));
+    }
+
+    public static Bitmap resizeBitmap(Bitmap bitmap, int width)
+    {
+        /*Bitmap mutableBitmap = bitmap.isMutable()
+                ? bitmap
+                : bitmap.copy(Bitmap.Config.ARGB_8888, true);*/
+        bitmap = zoomImage(bitmap,width,width);
+        Canvas canvas = new Canvas(bitmap);
+        int colour = (255 & 0xFF) << 24;
+        canvas.drawColor(colour, PorterDuff.Mode.DST_IN);
+        return bitmap;
+    }
+
+    public static Bitmap zoomImage(Bitmap bgimage, double newWidth,
+                                   double newHeight) {
+        // 获取这个图片的宽和高
+        float width = bgimage.getWidth();
+        float height = bgimage.getHeight();
+        // 创建操作图片用的matrix对象
+        Matrix matrix = new Matrix();
+        // 计算宽高缩放率
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+        // 缩放图片动作
+        matrix.postScale(scaleWidth, scaleHeight);
+        Bitmap bitmap = Bitmap.createBitmap(bgimage, 0, 0, (int) width,
+                (int) height, matrix, true);
+        return bitmap;
+    }
 }

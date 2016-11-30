@@ -11,6 +11,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.NinePatchDrawable;
 import android.graphics.drawable.VectorDrawable;
+import android.media.ThumbnailUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -87,7 +88,7 @@ public class AppIconView extends View {
                         long time =  currentTime - appIcon.getKilledTime();
                         if (time<FADE_OUT_TIME) {
                             int percent = (int) (time * 100 / FADE_OUT_TIME) > 100 ? 0 : 100-(int) (time * 100 / FADE_OUT_TIME);
-                            canvas.drawBitmap(BitmapUtil.adjustOpacity(mAppBitmap[i], percent), matrix, mBitmapPaint);
+                            canvas.drawBitmap(BitmapUtil.adjustOpacity(mAppBitmap[i], (int) (percent*255/100.0)), matrix, mBitmapPaint);
                         }
                     }
                     canvas.restore();
@@ -174,7 +175,7 @@ public class AppIconView extends View {
         mAppHeight = new int[infoList.size()];
 
         for (int i = 0;i<infoList.size();i++){
-            mAppBitmap[i] = BitmapUtil.getBitmapFromDrawable(infoList.get(i).getIcon());
+            mAppBitmap[i] = BitmapUtil.zoomImage(BitmapUtil.getBitmapFromDrawable(infoList.get(i).getIcon()),128,128);
             //mAppBitmap[i] = ((BitmapDrawable)getResources().getDrawable(R.mipmap.ic_launcher)).getBitmap();
             /*if (infoList.get(i).getIcon() instanceof BitmapDrawable) {
                 mAppBitmap[i] = ((BitmapDrawable) infoList.get(i).getIcon()).getBitmap();
